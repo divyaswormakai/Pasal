@@ -71,12 +71,16 @@ distributorRouter.put('/:id', async (req, res) => {
 				contact: body.contact,
 				address: body.address,
 			},
-			{ where: { distrib_id: req.params.id } }
+			{ where: { distrib_id: req.params.id }, returning: true }
 		);
 		if (!distributor) {
 			throw 'Could not find the required distributor';
 		}
-		res.status(200).send({ msg: 'Successfull updated data' });
+		console.log(distributor);
+		res.status(200).send({
+			distributor: distributor[1][0],
+			msg: 'Successfull updated data',
+		});
 	} catch (err) {
 		res.status(400).send({ msg: err });
 	}

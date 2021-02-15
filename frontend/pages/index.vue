@@ -3,6 +3,7 @@
     <h1>Medicine/ Home</h1>
     <ul>
       <!--      TODO: Create a table here to edit filter and all that stuff-->
+      <!--      TODO: Make the inputs in them editable as well as deletable-->
       <li
         v-for="(item, indx) in getMedicineData"
         :key="'Medicine-Item-' + indx"
@@ -15,7 +16,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { MEDICINE } from '~/store/utils/Constants'
+import { MEDICINE } from '~/utils/Constants'
 
 export default {
   data() {

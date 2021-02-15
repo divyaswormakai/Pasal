@@ -1,4 +1,4 @@
-import { MEDICINE, INVOICE, DISTRIBUTOR } from '~/store/utils/Constants'
+import { MEDICINE, INVOICE, DISTRIBUTOR } from '~/utils/Constants'
 
 const state = () => ({
   backendData: {

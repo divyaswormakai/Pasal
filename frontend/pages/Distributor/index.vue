@@ -1,18 +1,16 @@
 <template>
   <div>
     <h1>Distributors</h1>
-    <!--    Add Distributor Table-->
+    <!--    Add Distributor Modal-->
     <div>
-      <a-button type="primary" @click="showModal">
-        Open Modal with async logic
-      </a-button>
+      <a-button type="primary" @click="showModal"> Add a Distibutor </a-button>
       <a-modal
         title="Add a Distributor"
         :visible="visible"
         @ok="modalHandleOk"
         @cancel="modalHandleCancel"
       >
-        <a-form :form="form" layout="vertical">
+        <a-form :form="form" :layout="formLayout">
           <a-form-item label="Distributor Name">
             <a-input
               v-decorator="[
@@ -50,6 +48,35 @@
             />
           </a-form-item>
         </a-form>
+      </a-modal>
+    </div>
+    <!--    Edit Distributor Modal-->
+    <div>
+      <a-modal
+        title="Edit the Distributor"
+        :visible="editVisible"
+        @ok="editModalHandleOk"
+        @cancel="editModalHandleCancel"
+      >
+        <a-form-model :form="editForm" :layout="formLayout">
+          <a-form-model-item ref="name" label="Distributor Name" prop="name">
+            <a-input v-model="editActiveData.distrib_name" required />
+          </a-form-model-item>
+          <a-form-model-item
+            ref="contact"
+            label="Distributor Contact"
+            prop="contact"
+          >
+            <a-input v-model="editActiveData.contact" required />
+          </a-form-model-item>
+          <a-form-model-item
+            ref="address"
+            label="Distributor Address"
+            prop="address"
+          >
+            <a-input v-model="editActiveData.address" required />
+          </a-form-model-item>
+        </a-form-model>
       </a-modal>
     </div>
     <!--    Distributor Table-->
@@ -127,13 +154,20 @@
         @click="deleteData(record)"
         >Delete</a-button
       >
+      <a-button
+        type="primary"
+        slot="editAction"
+        slot-scope="record"
+        @click="toggleEditModal(record)"
+        >Edit</a-button
+      >
     </a-table>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { DISTRIBUTOR, DISTRIBUTOR_URL } from '~/store/utils/Constants'
+import { DISTRIBUTOR, DISTRIBUTOR_URL } from '~/utils/Constants'
 
 export default {
   name: 'Distributor',
@@ -145,9 +179,17 @@ export default {
   data() {
     return {
       visible: false,
-      formLayout: 'horizontal',
+      formLayout: 'vertical',
       form: this.$form.createForm(this, { name: 'coordinated' }),
 
+      editVisible: false,
+      editForm: this.$form.createForm(this, { name: 'coordinated' }),
+      editActiveData: {},
+      rules: {
+        name: [{ required: true, message: 'Please input the name' }],
+        contact: [{ required: true, message: 'Please input the contact' }],
+        address: [{ required: true, message: 'Please input the address' }],
+      },
       searchText: '',
       searchInput: null,
       searchedColumn: '',
@@ -190,6 +232,12 @@ export default {
           key: 'x',
           scopedSlots: { customRender: 'action' },
         },
+        {
+          title: '',
+          dataIndex: '',
+          key: 'y',
+          scopedSlots: { customRender: 'editAction' },
+        },
       ],
     }
   },
@@ -223,7 +271,7 @@ export default {
     },
 
     //  For Modal
-
+    //  region
     showModal() {
       this.visible = true
     },
@@ -252,8 +300,9 @@ export default {
     modalHandleCancel(e) {
       this.visible = false
     },
-
+    //  endregion
     //  For table data
+    //  region
     handleSearch(selectedKeys, confirm, dataIndex) {
       confirm()
       this.searchText = selectedKeys[0]
@@ -282,11 +331,45 @@ export default {
       }
       this.updateLoadingState(false)
     },
+    //  endregion
+    //  For Edit Modal
+    //  region
+    toggleEditModal(values) {
+      this.editVisible = true
+      this.editActiveData = { ...values }
+    },
 
-    // TODO make the rows editable and stuff
-    // async addData(e){
-    //
-    // }
+    async editModalHandleOk() {
+      await this.updateLoadingState(true)
+      console.log(this.editActiveData)
+      const postData = {
+        ...this.editActiveData,
+        name: this.editActiveData.distrib_name,
+      }
+      const result = await this.$axios.put(
+        DISTRIBUTOR_URL + `/${postData.distrib_id}`,
+        postData
+      )
+      if (result.status === 200) {
+        const distributor = result.data.distributor
+        const toUpdateData = this.getDistributorData.map((val) =>
+          val.distrib_id === distributor.distrib_id ? distributor : val
+        )
+        this.updateBackendData({
+          part: DISTRIBUTOR,
+          data: toUpdateData,
+        })
+        this.$message.success(result.data.msg)
+      } else {
+        this.$message.error(result.data.msg)
+      }
+      this.updateLoadingState(false)
+      this.editVisible = false
+    },
+    editModalHandleCancel(e) {
+      this.editVisible = false
+    },
+    //  endregion
   },
   mounted() {
     this.getDataFromServer()
