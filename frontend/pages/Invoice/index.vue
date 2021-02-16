@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>Invoices</h1>
-    <!--    Distributor Table-->
+    <!--  Invoice Table-->
     <a-table :data-source="getInvoiceData" :columns="columns">
       <div
         slot="filterDropdown"
@@ -76,6 +76,13 @@
         @click="deleteData(record)"
         >Delete</a-button
       >
+      <a-button
+        type="primary"
+        slot="detailsAction"
+        slot-scope="record"
+        @click="showData(record)"
+        >See Details</a-button
+      >
     </a-table>
   </div>
 </template>
@@ -86,14 +93,17 @@ import { INVOICE, INVOICE_URL } from '~/utils/Constants'
 
 export default {
   name: 'Invoice',
-
   head() {
     return {
       title: 'Invoice',
     }
   },
+
   data() {
     return {
+      visible: false,
+      selectedInvoiceId: null,
+      currentInvoiceData: {},
       searchText: '',
       searchInput: null,
       searchedColumn: '',
@@ -170,6 +180,12 @@ export default {
           key: 'x',
           scopedSlots: { customRender: 'action' },
         },
+        {
+          title: '',
+          dataIndex: '',
+          key: 'yy',
+          scopedSlots: { customRender: 'detailsAction' },
+        },
       ],
     }
   },
@@ -187,7 +203,6 @@ export default {
     async getDataFromServer() {
       const result = await this.$axios.get(INVOICE_URL)
       if (result.status === 200) {
-        this.updateLoadingState(false)
         this.$message.success(result.data.msg)
         this.updateBackendData({
           part: INVOICE,
@@ -196,6 +211,14 @@ export default {
       } else {
         this.$message.error('Could not fetch data')
       }
+      this.updateLoadingState(false)
+    },
+
+    showData(data) {
+      this.$router.push({
+        path: `/invoice/${data.invoice_id}`,
+        params: { id: data.invoice_id },
+      })
     },
 
     handleSearch(selectedKeys, confirm, dataIndex) {
