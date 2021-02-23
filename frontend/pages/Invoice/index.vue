@@ -203,13 +203,13 @@ export default {
     async getDataFromServer() {
       const result = await this.$axios.get(INVOICE_URL)
       if (result.status === 200) {
-        this.$message.success(result.data.msg)
+        this.$message.success(result.data.msg, 0.75)
         this.updateBackendData({
           part: INVOICE,
           data: result.data.invoices,
         })
       } else {
-        this.$message.error('Could not fetch data')
+        this.$message.error('Could not fetch data', 0.75)
       }
       this.updateLoadingState(false)
     },
@@ -243,9 +243,9 @@ export default {
           ),
         })
 
-        this.$message.success(`Deleted ${e.invoice_name} successfully`)
+        this.$message.success(`Deleted ${e.invoice_name} successfully`, 0.75)
       } else {
-        this.$message.error(res.data.msg)
+        this.$message.error(res.data.msg, 0.75)
       }
       this.updateLoadingState(false)
     },

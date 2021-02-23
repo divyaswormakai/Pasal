@@ -257,7 +257,7 @@ export default {
 
       if (result.status === 200) {
         this.updateLoadingState(false)
-        this.$message.success(result.data.msg)
+        this.$message.success(result.data.msg, 0.75)
         this.updateBackendData({
           part: DISTRIBUTOR,
           data: result.data.distributors.map((val) => ({
@@ -266,7 +266,7 @@ export default {
           })),
         })
       } else {
-        this.$message.error('Could not fetch data')
+        this.$message.error('Could not fetch data', 0.75)
       }
     },
 
@@ -290,9 +290,9 @@ export default {
             key: `Distributor-${distributor.distrib_id}`,
           }),
         })
-        this.$message.success(result.data.msg)
+        this.$message.success(result.data.msg, 0.75)
       } else {
-        this.$message.error(result.data.msg)
+        this.$message.error(result.data.msg, 0.75)
       }
       this.updateLoadingState(false)
       this.visible = false
@@ -325,9 +325,9 @@ export default {
           ),
         })
 
-        this.$message.success(`Deleted ${e.distrib_name} successfully`)
+        this.$message.success(`Deleted ${e.distrib_name} successfully`, 0.75)
       } else {
-        this.$message.error(res.data.msg)
+        this.$message.error(res.data.msg, 0.75)
       }
       this.updateLoadingState(false)
     },
@@ -359,9 +359,9 @@ export default {
           part: DISTRIBUTOR,
           data: toUpdateData,
         })
-        this.$message.success(result.data.msg)
+        this.$message.success(result.data.msg, 0.75)
       } else {
-        this.$message.error(result.data.msg)
+        this.$message.error(result.data.msg, 0.75)
       }
       this.updateLoadingState(false)
       this.editVisible = false
