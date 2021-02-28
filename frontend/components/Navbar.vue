@@ -8,7 +8,7 @@
         <nuxt-link to="/invoice"><a-icon type="appstore" />Invoices</nuxt-link>
       </a-menu-item>
       <a-menu-item key="distributor">
-        <nuxt-link to="distributor"
+        <nuxt-link to="/distributor"
           ><a-icon type="appstore" />Distributors</nuxt-link
         >
       </a-menu-item>
@@ -24,6 +24,9 @@ export default {
       current: ['home'],
       logoText: 'Pasal',
     }
+  },
+  mounted() {
+    this.current = [this.$route.path.split('/')[1]]
   },
 }
 </script>

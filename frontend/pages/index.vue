@@ -1,11 +1,22 @@
 <template>
   <div>
     <h1>Medicine/ Home</h1>
-    <!--    TODO: Switch to get expired near medicine or others and vice versa-->
-    <a-label>Show Near expired</a-label>
-    <a-switch></a-switch>
+    <a-row>
+      <b>Show Near Expiry First</b>
+      <a-radio-group :default-value="false" button-style="solid">
+        <a-radio-button :value="true" @click="changeVisibleData"
+          >Yes</a-radio-button
+        >
+        <a-radio-button :value="false" @click="changeVisibleData"
+          >No</a-radio-button
+        >
+      </a-radio-group>
+    </a-row>
+    <a-row>
+      <a-button @click="addRoute">Add New Medicine</a-button>
+    </a-row>
 
-    <a-table :columns="columns" :data-source="getMedicineData">
+    <a-table :columns="columns" :data-source="toShowData" rowKey="medicine">
       <div
         slot="filterDropdown"
         slot-scope="{
@@ -84,7 +95,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { MEDICINE } from '~/utils/Constants'
+import { DISTRIBUTOR, DISTRIBUTOR_URL, MEDICINE } from '~/utils/Constants'
 
 export default {
   data() {
@@ -96,7 +107,7 @@ export default {
         {
           title: 'Name',
           dataIndex: 'medicine_name',
-          key: 'name',
+          key: 'medicine_name',
           scopedSlots: {
             filterDropdown: 'filterDropdown',
             filterIcon: 'filterIcon',
@@ -118,7 +129,7 @@ export default {
         {
           title: 'Batch Code',
           dataIndex: 'batch_code',
-          key: 'batchCode',
+          key: 'medicine_batchCode',
           scopedSlots: {
             filterDropdown: 'filterDropdown',
             filterIcon: 'filterIcon',
@@ -140,7 +151,7 @@ export default {
         {
           title: 'Mfd Date',
           dataIndex: 'mfd_date',
-          key: 'mfdDate',
+          key: 'medicine_mfdDate',
           scopedSlots: {
             filterDropdown: 'filterDropdown',
             filterIcon: 'filterIcon',
@@ -162,7 +173,7 @@ export default {
         {
           title: 'Exp Date',
           dataIndex: 'exp_date',
-          key: 'expDate',
+          key: 'medicine_expDate',
           scopedSlots: {
             filterDropdown: 'filterDropdown',
             filterIcon: 'filterIcon',
@@ -180,15 +191,17 @@ export default {
               }, 0)
             }
           },
+          defaultSortOrder: 'descend',
+          sorter: (a, b) => a.exp_date - b.exp_date,
         },
-        { title: 'Quantity', dataIndex: 'quantity', key: 'quantity' },
-        { title: 'Bonus', dataIndex: 'bonus', key: 'bonus' },
-        { title: 'MRP', dataIndex: 'mrp', key: 'mrp' },
-        { title: 'Cost', dataIndex: 'cost', key: 'cost' },
+        { title: 'Quantity', dataIndex: 'quantity', key: 'medicine_quantity' },
+        { title: 'Bonus', dataIndex: 'bonus', key: 'medicine_bonus' },
+        { title: 'MRP', dataIndex: 'mrp', key: 'medicine_mrp' },
+        { title: 'Cost', dataIndex: 'cost', key: 'medicine_cost' },
         {
           title: 'Distributor',
           dataIndex: 'distrib_name',
-          key: 'distributor',
+          key: 'medicine_distributor',
           scopedSlots: {
             filterDropdown: 'filterDropdown',
             filterIcon: 'filterIcon',
@@ -214,11 +227,13 @@ export default {
           scopedSlots: { customRender: 'invoicetag' },
         },
       ],
+      toShowData: [],
     }
   },
   computed: {
     ...mapGetters({
       getMedicineData: 'getMedicineData',
+      getNearExpData: 'getNearExpData',
     }),
   },
   methods: {
@@ -227,11 +242,21 @@ export default {
       updateLoadingState: 'updateLoadingState',
     }),
 
+    changeVisibleData(e) {
+      this.toShowData =
+        e.target.value && e.target.value === 'true'
+          ? this.getNearExpData
+          : this.getMedicineData
+      console.log(this.toShowData.map((val) => val.medicine_name))
+    },
+
+    addRoute() {
+      this.$router.push('/medicine/add')
+    },
+
     async getDataFromServer() {
-      const result = await this.$axios.get('/api/medicine')
+      let result = await this.$axios.get('/api/medicine')
       if (result.status === 200) {
-        this.updateLoadingState(false)
-        this.$message.success(result.data.msg, 0.75)
         this.updateBackendData({
           part: MEDICINE,
           data: result.data.medicineList.sort(
@@ -242,6 +267,23 @@ export default {
       } else {
         this.$message.error('Could not fetch data', 0.75)
       }
+
+      //  Distributor data
+      result = await this.$axios.get(DISTRIBUTOR_URL)
+
+      if (result.status === 200) {
+        this.$message.success(result.data.msg, 0.75)
+        this.updateBackendData({
+          part: DISTRIBUTOR,
+          data: result.data.distributors.map((val) => ({
+            ...val,
+            key: `Distributor-${val.distrib_id}`,
+          })),
+        })
+      } else {
+        this.$message.error('Could not fetch data', 0.75)
+      }
+      this.updateLoadingState(false)
     },
     handleSearch(selectedKeys, confirm, dataIndex) {
       confirm()
@@ -256,6 +298,7 @@ export default {
   },
   mounted() {
     this.getDataFromServer()
+    this.toShowData = this.getMedicineData
   },
 }
 </script>

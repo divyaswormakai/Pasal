@@ -80,7 +80,11 @@
       </a-modal>
     </div>
     <!--    Distributor Table-->
-    <a-table :data-source="getDistributorData" :columns="columns">
+    <a-table
+      :data-source="getDistributorData"
+      :columns="columns"
+      rowKey="distributor"
+    >
       <div
         slot="filterDropdown"
         slot-scope="{
@@ -252,24 +256,6 @@ export default {
       updateLoadingState: 'updateLoadingState',
     }),
 
-    async getDataFromServer() {
-      const result = await this.$axios.get(DISTRIBUTOR_URL)
-
-      if (result.status === 200) {
-        this.updateLoadingState(false)
-        this.$message.success(result.data.msg, 0.75)
-        this.updateBackendData({
-          part: DISTRIBUTOR,
-          data: result.data.distributors.map((val) => ({
-            ...val,
-            key: `Distributor-${val.distrib_id}`,
-          })),
-        })
-      } else {
-        this.$message.error('Could not fetch data', 0.75)
-      }
-    },
-
     //  For Modal
     //  region
     showModal() {
@@ -370,9 +356,6 @@ export default {
       this.editVisible = false
     },
     //  endregion
-  },
-  mounted() {
-    this.getDataFromServer()
   },
 }
 </script>

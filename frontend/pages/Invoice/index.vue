@@ -2,7 +2,7 @@
   <div>
     <h1>Invoices</h1>
     <!--  Invoice Table-->
-    <a-table :data-source="getInvoiceData" :columns="columns">
+    <a-table :data-source="getInvoiceData" :columns="columns" rowKey="invoice">
       <div
         slot="filterDropdown"
         slot-scope="{

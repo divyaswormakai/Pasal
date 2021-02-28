@@ -19,6 +19,12 @@ const getters = {
   getInvoiceData: (state) => {
     return state.backendData.invoiceData
   },
+  //  TODO: Write a proper algo to sort by expiry date here
+  getNearExpData: (state) => {
+    return state.backendData.medicineData.filter(
+      (val) => val.medicine_name === 'Nims'
+    )
+  },
   getLoadingData: (state) => {
     return state.loading
   },
