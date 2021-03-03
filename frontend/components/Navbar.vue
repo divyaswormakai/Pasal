@@ -7,10 +7,16 @@
       <a-menu-item key="invoice">
         <nuxt-link to="/invoice"><a-icon type="appstore" />Invoices</nuxt-link>
       </a-menu-item>
+      <a-menu-item key="expiry">
+        <nuxt-link to="/expiry"><a-icon type="appstore" />Expiry</nuxt-link>
+      </a-menu-item>
       <a-menu-item key="distributor">
         <nuxt-link to="/distributor"
           ><a-icon type="appstore" />Distributors</nuxt-link
         >
+      </a-menu-item>
+      <a-menu-item key="chart">
+        <nuxt-link to="/chart"><a-icon type="appstore" />Chart</nuxt-link>
       </a-menu-item>
     </a-menu>
   </div>

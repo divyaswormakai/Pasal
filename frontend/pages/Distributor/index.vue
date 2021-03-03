@@ -177,7 +177,7 @@ export default {
   name: 'Distributor',
   head() {
     return {
-      title: 'Invoice',
+      title: 'Distributor',
     }
   },
   data() {
