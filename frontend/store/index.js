@@ -25,14 +25,30 @@ const getters = {
       (val) => val.medicine_name === 'Nims'
     )
   },
-  getDistributorRelatedData: (state) => {
+  getDistribChartData: (state) => {
     const returnVals = {}
-    // return state.backendData.medicineData
 
     state.backendData.medicineData.forEach((medicine) => {
-      returnVals[medicine.distrib_name] += medicine.quantity * medicine.cost
+      if (returnVals[medicine.distrib_name]) {
+        returnVals[medicine.distrib_name] += medicine.quantity * medicine.cost
+      } else {
+        returnVals[medicine.distrib_name] = medicine.quantity * medicine.cost
+      }
     })
-    console.log(returnVals)
+    return returnVals
+  },
+  getMedicineChartData: (state) => {
+    const returnVals = {}
+
+    state.backendData.medicineData.forEach((medicine) => {
+      if (returnVals[medicine.medicine_name]) {
+        returnVals[medicine.medicine_name] += medicine.quantity * medicine.cost
+      } else {
+        returnVals[medicine.medicine_name] = medicine.quantity * medicine.cost
+      }
+    })
+
+    return returnVals
   },
   getLoadingData: (state) => {
     return state.loading
