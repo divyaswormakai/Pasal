@@ -1,56 +1,64 @@
 <template>
   <div v-if="modalData.invoice_name">
-    <a-row type="flex" justify="center">
-      <h1>{{ modalData.invoice_name }}</h1>
+    <a-button @click="printFn">Print</a-button>
+    <a-row id="printableArea">
+      <a-row type="flex" justify="center">
+        <h1>{{ modalData.invoice_name }}</h1>
+      </a-row>
+      <a-row type="flex" align="middle">
+        <a-col :span="12">
+          <a-row type="flex" justify="start">
+            <b>{{ modalData.distributor.distrib_name }}</b
+            ><br />{{ modalData.distributor.contact }}<br />{{
+              modalData.distributor.address
+            }}
+          </a-row>
+        </a-col>
+        <a-col :span="12" pull="right">
+          <a-row type="flex" justify="end">
+            Date: {{ modalData.date_of_invoice }}
+          </a-row>
+        </a-col>
+      </a-row>
+      <table class="invoice-table">
+        <thead>
+          <tr>
+            <th>S.No</th>
+            <th>Name</th>
+            <th>Batch</th>
+            <th>Mfd. Date</th>
+            <th>Exp. Date</th>
+            <th>Quantity</th>
+            <th>Bonus</th>
+            <th>MRP</th>
+            <th>Cost per piece</th>
+            <th>Total Cost</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(item, idx) in modalData.medicines"
+            :key="'Invoice-Medicine-' + idx"
+          >
+            <td>{{ idx + 1 }}</td>
+            <td>{{ item.medicine_name }}</td>
+            <td>{{ item.batch_code }}</td>
+            <td>{{ item.mfd_date }}</td>
+            <td>{{ item.exp_date }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.bonus }}</td>
+            <td>{{ item.mrp }}</td>
+            <td>{{ item.cost }}</td>
+            <td>{{ item.cost * item.quantity }}</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td colspan="8">Total</td>
+            <td>{{ totalData }}</td>
+          </tr>
+        </tbody>
+      </table>
     </a-row>
-    <a-row type="flex" align="middle">
-      <a-col :span="12">
-        <a-row type="flex" justify="start">
-          <b>{{ modalData.distributor.distrib_name }}</b
-          ><br />{{ modalData.distributor.contact }}<br />{{
-            modalData.distributor.address
-          }}
-        </a-row>
-      </a-col>
-      <a-col :span="12" pull="right">
-        <a-row type="flex" justify="end">
-          Date: {{ modalData.date_of_invoice }}
-        </a-row>
-      </a-col>
-    </a-row>
-    <table class="invoice-table">
-      <thead>
-        <tr>
-          <th>S.No</th>
-          <th>Name</th>
-          <th>Batch</th>
-          <th>Mfd. Date</th>
-          <th>Exp. Date</th>
-          <th>Quantity</th>
-          <th>Bonus</th>
-          <th>MRP</th>
-          <th>Cost per piece</th>
-          <th>Total Cost</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="(item, idx) in modalData.medicines"
-          :key="'Invoice-Medicine-' + idx"
-        >
-          <td>{{ idx + 1 }}</td>
-          <td>{{ item.medicine_name }}</td>
-          <td>{{ item.batch_code }}</td>
-          <td>{{ item.mfd_date }}</td>
-          <td>{{ item.exp_date }}</td>
-          <td>{{ item.quantity }}</td>
-          <td>{{ item.bonus }}</td>
-          <td>{{ item.mrp }}</td>
-          <td>{{ item.cost }}</td>
-          <td>{{ item.cost * item.quantity }}</td>
-        </tr>
-      </tbody>
-    </table>
   </div>
 </template>
 
@@ -63,12 +71,20 @@ export default {
   data() {
     return {
       modalData: {},
+      totalData: 0,
     }
   },
   methods: {
     ...mapActions({
       updateLoadingState: 'updateLoadingState',
     }),
+    printFn() {
+      const printContent = document.getElementById('printableArea').innerHTML
+      const originalContent = document.body.innerHTML
+      document.body.innerHTML = printContent
+      window.print()
+      document.body.innerHTML = originalContent
+    },
   },
   async created() {
     this.updateLoadingState(true)
@@ -83,6 +99,12 @@ export default {
     } else {
       this.$message.error('Could not fetch data')
     }
+
+    const costs = this.modalData.medicines.map(
+      (item) => item.quantity * item.cost
+    )
+
+    this.totalData = costs.reduce((tot, cur) => tot + cur)
     this.updateLoadingState(false)
   },
 }

@@ -80,7 +80,11 @@
       </a-modal>
     </div>
     <!--    Distributor Table-->
-    <a-table :data-source="getDistributorData" :columns="columns">
+    <a-table
+      :data-source="getDistributorData"
+      :columns="columns"
+      rowKey="distributor"
+    >
       <div
         slot="filterDropdown"
         slot-scope="{
@@ -173,7 +177,7 @@ export default {
   name: 'Distributor',
   head() {
     return {
-      title: 'Invoice',
+      title: 'Distributor',
     }
   },
   data() {
@@ -252,24 +256,6 @@ export default {
       updateLoadingState: 'updateLoadingState',
     }),
 
-    async getDataFromServer() {
-      const result = await this.$axios.get(DISTRIBUTOR_URL)
-
-      if (result.status === 200) {
-        this.updateLoadingState(false)
-        this.$message.success(result.data.msg)
-        this.updateBackendData({
-          part: DISTRIBUTOR,
-          data: result.data.distributors.map((val) => ({
-            ...val,
-            key: `Distributor-${val.distrib_id}`,
-          })),
-        })
-      } else {
-        this.$message.error('Could not fetch data')
-      }
-    },
-
     //  For Modal
     //  region
     showModal() {
@@ -290,9 +276,9 @@ export default {
             key: `Distributor-${distributor.distrib_id}`,
           }),
         })
-        this.$message.success(result.data.msg)
+        this.$message.success(result.data.msg, 0.75)
       } else {
-        this.$message.error(result.data.msg)
+        this.$message.error(result.data.msg, 0.75)
       }
       this.updateLoadingState(false)
       this.visible = false
@@ -325,9 +311,9 @@ export default {
           ),
         })
 
-        this.$message.success(`Deleted ${e.distrib_name} successfully`)
+        this.$message.success(`Deleted ${e.distrib_name} successfully`, 0.75)
       } else {
-        this.$message.error(res.data.msg)
+        this.$message.error(res.data.msg, 0.75)
       }
       this.updateLoadingState(false)
     },
@@ -359,9 +345,9 @@ export default {
           part: DISTRIBUTOR,
           data: toUpdateData,
         })
-        this.$message.success(result.data.msg)
+        this.$message.success(result.data.msg, 0.75)
       } else {
-        this.$message.error(result.data.msg)
+        this.$message.error(result.data.msg, 0.75)
       }
       this.updateLoadingState(false)
       this.editVisible = false
@@ -370,9 +356,6 @@ export default {
       this.editVisible = false
     },
     //  endregion
-  },
-  mounted() {
-    this.getDataFromServer()
   },
 }
 </script>
