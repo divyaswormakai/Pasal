@@ -2,7 +2,11 @@
   <div>
     <h1>Near Expiry</h1>
 
-    <a-table :columns="columns" :data-source="getNearExpData" rowKey="medicine">
+    <a-table
+      :columns="columns"
+      :data-source="getNearExpData"
+      row-key="medicine"
+    >
       <div
         slot="filterDropdown"
         slot-scope="{
@@ -26,6 +30,7 @@
             () => handleSearch(selectedKeys, confirm, column.dataIndex)
           "
         />
+
         <a-button
           type="primary"
           icon="search"
@@ -70,9 +75,9 @@
         </template>
       </template>
       <a
-        :href="'/invoice/' + record.invoice_id"
         slot="invoicetag"
         slot-scope="record"
+        :href="'/invoice/' + record.invoice_id"
         >{{ record.invoice_name }}</a
       >
     </a-table>
@@ -83,7 +88,7 @@
 import { mapGetters } from 'vuex'
 
 export default {
-  name: 'expiry',
+  name: 'Expiry',
   data() {
     return {
       searchText: '',

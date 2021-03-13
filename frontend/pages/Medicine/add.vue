@@ -4,6 +4,7 @@
     <a-row type="flex" justify="start">
       <label> Invoice Name</label>
       <a-input
+        v-model="invoiceName"
         placeholder="InvoiceId"
         name="invoice_name"
         style="text-transform: uppercase"
@@ -24,7 +25,7 @@
     </a-col>
 
     <label>Date of Invoice</label>
-    <a-date-picker placeholder="Select month" v-model="dateOfInvoice" />
+    <a-date-picker v-model="dateOfInvoice" placeholder="Select month" />
     <table>
       <thead>
         <tr>
@@ -92,6 +93,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { MEDICINE_URL } from '~/utils/Constants'
 export default {
   name: 'add.vue',
   data() {
@@ -109,6 +111,11 @@ export default {
     ...mapGetters({
       getDistributorData: 'getDistributorData',
     }),
+  },
+  mounted() {
+    console.log(this.getDistributorData)
+    this.$store.dispatch('updateLoadingState', false)
+    this.AddRow()
   },
   methods: {
     removeColumn(idx) {
@@ -128,8 +135,7 @@ export default {
         exp_date: '',
       })
     },
-    Submit() {
-      let bodyData = {}
+    async Submit() {
       try {
         const medicines = this.medicineList.map((data) => {
           Object.values(data).forEach((val) => {
@@ -137,27 +143,42 @@ export default {
               throw new Error('Fill all fields')
             }
           })
+          console.log('HMM')
           return {
             ...data,
             mfd_date: data?.mfd_date?.format('YYYY-MM-DD'),
             exp_date: data?.exp_date?.format('YYYY-MM-DD'),
           }
         })
-        bodyData = {
+
+        if (!this.distributorDetails) {
+          throw new Error("Distributor can't be empty")
+        }
+        if (!this.dateOfInvoice) {
+          throw new Error('Date cannot be empty')
+        }
+        if (!this.invoiceName) {
+          throw new Error('Invoice must have a unique ID')
+        }
+
+        const bodyData = {
           medicines,
           distributor: this.distributorDetails,
-          dateOfInvoice: this.dateOfInvoice,
+          dateOfInvoice: this.dateOfInvoice?.format('YYYY-MM-DD'),
+          invoiceName: this.invoiceName,
         }
-        console.log(bodyData)
+
+        const res = await this.$axios.post(MEDICINE_URL + '/add', bodyData)
+        if (res.status === 200) {
+          this.$message.success('Successfully added new invoice')
+          this.$router.push('/')
+        } else {
+          throw new Error(res.error)
+        }
       } catch (err) {
-        this.$message.error('Fill all the fields')
+        this.$message.error(err.message)
       }
     },
-  },
-  mounted() {
-    console.log(this.getDistributorData)
-    this.$store.dispatch('updateLoadingState', false)
-    this.AddRow()
   },
 }
 </script>

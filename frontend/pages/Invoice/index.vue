@@ -2,7 +2,7 @@
   <div>
     <h1>Invoices</h1>
     <!--  Invoice Table-->
-    <a-table :data-source="getInvoiceData" :columns="columns" rowKey="invoice">
+    <a-table :data-source="getInvoiceData" :columns="columns" row-key="invoice">
       <div
         slot="filterDropdown"
         slot-scope="{
@@ -70,16 +70,16 @@
         </template>
       </template>
       <a-button
-        type="danger"
         slot="action"
         slot-scope="record"
+        type="danger"
         @click="deleteData(record)"
         >Delete</a-button
       >
       <a-button
-        type="primary"
         slot="detailsAction"
         slot-scope="record"
+        type="primary"
         @click="showData(record)"
         >See Details</a-button
       >
@@ -93,11 +93,6 @@ import { INVOICE, INVOICE_URL } from '~/utils/Constants'
 
 export default {
   name: 'Invoice',
-  head() {
-    return {
-      title: 'Invoice',
-    }
-  },
 
   data() {
     return {
@@ -187,6 +182,11 @@ export default {
           scopedSlots: { customRender: 'detailsAction' },
         },
       ],
+    }
+  },
+  head() {
+    return {
+      title: 'Invoice',
     }
   },
   computed: {

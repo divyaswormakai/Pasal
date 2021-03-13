@@ -83,7 +83,7 @@
     <a-table
       :data-source="getDistributorData"
       :columns="columns"
-      rowKey="distributor"
+      row-key="distributor"
     >
       <div
         slot="filterDropdown"
@@ -152,16 +152,16 @@
         </template>
       </template>
       <a-button
-        type="danger"
         slot="action"
         slot-scope="record"
+        type="danger"
         @click="deleteData(record)"
         >Delete</a-button
       >
       <a-button
-        type="primary"
         slot="editAction"
         slot-scope="record"
+        type="primary"
         @click="toggleEditModal(record)"
         >Edit</a-button
       >
@@ -175,11 +175,6 @@ import { DISTRIBUTOR, DISTRIBUTOR_URL } from '~/utils/Constants'
 
 export default {
   name: 'Distributor',
-  head() {
-    return {
-      title: 'Distributor',
-    }
-  },
   data() {
     return {
       visible: false,
@@ -243,6 +238,11 @@ export default {
           scopedSlots: { customRender: 'editAction' },
         },
       ],
+    }
+  },
+  head() {
+    return {
+      title: 'Distributor',
     }
   },
   computed: {

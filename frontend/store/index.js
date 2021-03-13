@@ -25,6 +25,15 @@ const getters = {
       (val) => val.medicine_name === 'Nims'
     )
   },
+  getDistributorRelatedData: (state) => {
+    const returnVals = {}
+    // return state.backendData.medicineData
+
+    state.backendData.medicineData.forEach((medicine) => {
+      returnVals[medicine.distrib_name] += medicine.quantity * medicine.cost
+    })
+    console.log(returnVals)
+  },
   getLoadingData: (state) => {
     return state.loading
   },

@@ -9,7 +9,7 @@
     <a-table
       :columns="columns"
       :data-source="getMedicineData"
-      rowKey="medicine"
+      row-key="medicine"
     >
       <div
         slot="filterDropdown"
@@ -78,9 +78,9 @@
         </template>
       </template>
       <a
-        :href="'/invoice/' + record.invoice_id"
         slot="invoicetag"
         slot-scope="record"
+        :href="'/invoice/' + record.invoice_id"
         >{{ record.invoice_name }}</a
       >
     </a-table>

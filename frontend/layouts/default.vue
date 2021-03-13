@@ -1,6 +1,6 @@
 <template>
   <div class="body">
-    <div class="loader-div" v-if="this.$store.state.loading">
+    <div v-if="this.$store.state.loading" class="loader-div">
       <span class="loader"></span>
     </div>
     <Navbar />
