@@ -1,15 +1,10 @@
 <template>
   <div>
-    <h1>Medicine/ Home</h1>
-
-    <!--    TODO: Area Chart to show time of maximum orders-->
-    <a-row>
-      <a-button @click="addRoute">Add New Medicine</a-button>
-    </a-row>
+    <h1>Near Expiry</h1>
 
     <a-table
       :columns="columns"
-      :data-source="getMedicineData"
+      :data-source="getExpiredData"
       row-key="medicine"
     >
       <div
@@ -35,6 +30,7 @@
             () => handleSearch(selectedKeys, confirm, column.dataIndex)
           "
         />
+
         <a-button
           type="primary"
           icon="search"
@@ -89,10 +85,10 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
-import { DISTRIBUTOR, DISTRIBUTOR_URL, MEDICINE } from '~/utils/Constants'
+import { mapGetters } from 'vuex'
 
 export default {
+  name: 'Expired',
   data() {
     return {
       searchText: '',
@@ -224,51 +220,10 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getMedicineData: 'getMedicineData',
-      getNearExpData: 'getNearExpData',
-      getLoadingData: 'getLoadingData',
+      getExpiredData: 'getExpiredData',
     }),
   },
   methods: {
-    ...mapActions({
-      updateBackendData: 'updateBackendData',
-      updateLoadingState: 'updateLoadingState',
-    }),
-
-    addRoute() {
-      this.$router.push('/medicine/add')
-    },
-
-    async getDataFromServer() {
-      let result = await this.$axios.get('/api/medicine')
-      if (result.status === 200) {
-        this.updateBackendData({
-          part: MEDICINE,
-          data: result.data.medicineList.sort(
-            (a, b) => a.medicine_name - b.medicine_name
-          ),
-        })
-      } else {
-        this.$message.error('Could not fetch data', 0.75)
-      }
-
-      //  Distributor data
-      result = await this.$axios.get(DISTRIBUTOR_URL)
-
-      if (result.status === 200) {
-        this.$message.success(result.data.msg, 0.75)
-        this.updateBackendData({
-          part: DISTRIBUTOR,
-          data: result.data.distributors.map((val) => ({
-            ...val,
-            key: `Distributor-${val.distrib_id}`,
-          })),
-        })
-      } else {
-        this.$message.error('Could not fetch data', 0.75)
-      }
-      this.updateLoadingState(false)
-    },
     handleSearch(selectedKeys, confirm, dataIndex) {
       confirm()
       this.searchText = selectedKeys[0]
@@ -279,9 +234,6 @@ export default {
       clearFilters()
       this.searchText = ''
     },
-  },
-  mounted() {
-    this.getDataFromServer()
   },
 }
 </script>

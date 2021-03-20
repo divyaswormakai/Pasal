@@ -19,10 +19,20 @@ const getters = {
   getInvoiceData: (state) => {
     return state.backendData.invoiceData
   },
-  //  TODO: Write a proper algo to sort by expiry date here
   getNearExpData: (state) => {
-    return state.backendData.medicineData.filter(
-      (val) => val.medicine_name === 'Nims'
+    const medNotExpired = state.backendData.medicineData.filter(
+      (val) => new Date(val?.exp_date).getTime() > Date.now()
+    )
+    return medNotExpired.sort(
+      (a, b) => new Date(a.exp_date) - new Date(b.exp_date)
+    )
+  },
+  getExpiredData: (state) => {
+    const medExpired = state.backendData.medicineData.filter(
+      (val) => new Date(val?.exp_date).getTime() <= Date.now()
+    )
+    return medExpired.sort(
+      (a, b) => new Date(b.exp_date) - new Date(a.exp_date)
     )
   },
   getDistribChartData: (state) => {

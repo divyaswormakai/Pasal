@@ -182,8 +182,6 @@ export default {
               }, 0)
             }
           },
-          defaultSortOrder: 'descend',
-          sorter: (a, b) => a.exp_date - b.exp_date,
         },
         { title: 'Quantity', dataIndex: 'quantity', key: 'medicine_quantity' },
         { title: 'Bonus', dataIndex: 'bonus', key: 'medicine_bonus' },

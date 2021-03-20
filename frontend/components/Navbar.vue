@@ -10,6 +10,9 @@
       <a-menu-item key="expiry">
         <nuxt-link to="/expiry"><a-icon type="appstore" />Expiry</nuxt-link>
       </a-menu-item>
+      <a-menu-item key="expired">
+        <nuxt-link to="/expired"><a-icon type="appstore" />Expired</nuxt-link>
+      </a-menu-item>
       <a-menu-item key="distributor">
         <nuxt-link to="/distributor"
           ><a-icon type="appstore" />Distributors</nuxt-link
